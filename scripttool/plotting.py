@@ -2,7 +2,7 @@
 provides convenience plotting tools for scripttools
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-09 11:27:38 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-09 15:12:29 by Steffen Waldherr>
 
 import matplotlib
 import os
@@ -10,7 +10,7 @@ if not "DISPLAY" in os.environ:
     matplotlib.use("Agg")
 from matplotlib import pyplot
 
-def makeax(xlabel="",ylabel="",title="", figtype=None):
+def make_ax(xlabel="",ylabel="",title="", figtype=None):
     """
     make a simple figure with one axis for plotting
 
@@ -20,7 +20,7 @@ def makeax(xlabel="",ylabel="",title="", figtype=None):
     None - default figure appearance
     'beamer' - configuration for inclusion in latex beamer presentations
     """
-    fig = pyplot.Figure()
+    fig = pyplot.figure()
     ax = fig.add_subplot(111)
     if figtype=='beamer':
         if len(title) is 0:
@@ -36,3 +36,6 @@ def makeax(xlabel="",ylabel="",title="", figtype=None):
         fig.set_dpi(200)
     return fig, ax
 
+def show():
+    if "DISPLAY" in os.environ:
+        pyplot.show()
