@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-09 15:32:07 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-09 15:35:27 by Steffen Waldherr>
 
 import sys
 import os
@@ -11,9 +11,11 @@ from optparse import OptionParser
 import plotting
 
 scriptconfig = {"output_dir": "script_output",
-                "options": {"m":{"help":"use memoization", "action":"store_true", "default":False},
-                            "s":{"longname":"show", "help":"show plots", "default":False},
-                            "x":{"longname":"export", "help":"export plots to files", "default":False}
+                "options": {"m":{"longname":"memoize","help":"use memoization", "action":"store_true",
+                                 "default":False},
+                            "s":{"longname":"show", "help":"show plots", "action":"store_true", "default":False},
+                            "x":{"longname":"export", "help":"export plots to files", "action":"store_true",
+                                 "default":False}
                             }
                 }
 

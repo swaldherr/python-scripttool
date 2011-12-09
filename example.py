@@ -26,7 +26,6 @@ class Exp2(scripttool.Task):
 class Exp3(scripttool.Task):
     customize = {"freq":1.0}
     options = {}
-    options["p"] = {"longname":"plot", "action":"store_true", "default":False}
     doc = "plot sinus with frequency = %(freq)g"
     def run(self):
         self.printf("Experiment 3 with frequency %(freq)g")
@@ -36,7 +35,7 @@ class Exp3(scripttool.Task):
         # self.save_figures()
 
 options = {}
-options["a"] = {"action":"store_true", "help":"use cached computation results2"}
+options["g"] = {"action":"store_true", "help":"a global boolean option"}
 scripttool.set_options(options)
 scripttool.set_output_dir("example_results")
 
