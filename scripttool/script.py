@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-09 15:35:27 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-09 15:51:38 by Steffen Waldherr>
 
 import sys
 import os
@@ -62,6 +62,11 @@ class Task(object):
         return fig, ax
 
     def save_figures(self, names=None):
+        """
+        save all figures for this task to their respective files.
+        normally not called manually, because if the option "export" is set to true,
+        this will be done automatically at the end of the script.
+        """
         if names is None:
             names = self.figures.keys()
         for i in names:
@@ -112,6 +117,8 @@ def run(options=None, tasks=None):
         elif isinstance(i, type):
             i = i.__name__
         tasklist[i].run()
+        if options is not None and options.export:
+            tasklist[i].save_figures()
 
 def set_options(opt):
     """
@@ -144,4 +151,5 @@ def main():
         i.options = options
         i.args = args
     run(options=options)
-    plotting.show()
+    if options.show:
+        plotting.show()

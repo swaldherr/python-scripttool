@@ -32,7 +32,6 @@ class Exp3(scripttool.Task):
         fig, ax = self.make_ax(name="sin" + str(self.freq))
         x = np.arange(-np.pi, np.pi, step=0.01)
         ax.plot(x, np.sin(self.freq*x))
-        # self.save_figures()
 
 options = {}
 options["g"] = {"action":"store_true", "help":"a global boolean option"}
