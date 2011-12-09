@@ -22,13 +22,15 @@ class Exp2(scripttool.Task):
         print "Experiment 2", self.param
 
 class Exp3(scripttool.Task):
-    # customize = [("fun", "math.sin")]
+    options = {}
+    options["p"] = {"longname":"plot", "action":"store_true", "default":False}
+    doc = "just an example"
     def run(self):
         pass
 
 scripttool.register_task(Exp1(), ident="exp1") # must be called by ident
 e2 = Exp2()
-scripttool.register_task(e2) # must be called by class name
+scripttool.register_task(e2) # uses ident=Exp2
 e2a = scripttool.register_task(Exp2(param="a"), ident="exp2a") # must be called by ident
 
 # scripttool.set_default("Exp2")

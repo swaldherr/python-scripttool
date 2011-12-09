@@ -2,7 +2,9 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-09 11:13:55 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-09 12:49:48 by Steffen Waldherr>
+
+from optparse import OptionParser
 
 class Task(object):
     """
@@ -16,13 +18,11 @@ class Task(object):
             pass
 
 tasklist = {}
+optparser = OptionParser()
 
 def register_task(task, ident=None):
-    task._ident = ident
-    if ident is None:
-        tasklist[type(task)] = task
-    else:
-        tasklist[ident] = task
+    task._ident = task.__class__.__name__ if ident is None else ident
+    tasklist[task._ident] = task
     return task
 
 def run(tasks=None):
@@ -30,8 +30,13 @@ def run(tasks=None):
         tasks = tasklist.keys()
     for i in tasks:
         if isinstance(i, Task):
-            try:
-                i = i._ident
-            except AttributeError:
-                i = type(i)
+            i = i._ident
+        elif isinstance(i, type):
+            i = i.__name__
         tasklist[i].run()
+
+def process_options():
+    pass
+
+def main():
+    pass
