@@ -2,13 +2,14 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-09 15:51:38 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-10 12:53:25 by Steffen Waldherr>
 
 import sys
 import os
 from optparse import OptionParser
 
 import plotting
+import memoize
 
 scriptconfig = {"output_dir": "script_output",
                 "options": {"m":{"longname":"memoize","help":"use memoization", "action":"store_true",
@@ -26,6 +27,11 @@ class Task(object):
     base class for tasks that can be called in a script
     """
     def __init__(self, out=sys.stdout, input=sys.stdin, **kwargs):
+        """
+        construct a task with output to out, input from input, and
+        optional attributes given as keyword arguments
+        (keywords must first be defined in class attribute 'customize')
+        """
         self.out = out
         self.input = input
         self.figures = {}
@@ -36,12 +42,18 @@ class Task(object):
             pass
 
     def get_doc(self):
+        """
+        get task's documentation string, formatted using the task's attributes
+        """
         try:
             return self.doc % self.__dict__
         except AttributeError:
             return "__no_docstring__"
 
     def get_options(self):
+        """
+        get internal option directory for use with OptionParser
+        """
         try:
             return self.options
         except AttributeError:
@@ -73,26 +85,45 @@ class Task(object):
             self.figures[i].savefig(os.path.join(self.get_output_dir(), i+".png"))
 
     def get_output_dir(self):
+        """
+        get name of task specific output directory
+        """
         try:
             return os.path.join(scriptconfig["output_dir"], self._ident)
         except AttributeError:
             return os.path.join(scriptconfig["output_dir"], self.__class__.__name__)
-        return
 
     def printf(self, string):
+        """
+        print string to script's output stream, format using dict of task attributes
+
+        Example:
+        >>> task.variable = 5
+        >>> task.printf("Variable is: %(variable)d")
+        Variable is: 5
+        """
         self.out.write((string+"\n") % self.__dict__)
                       
 
 def set_output_dir(dirname):
+    """
+    update script's output dir to given dirname
+    """
     scriptconfig["output_dir"] = dirname
 
 def ensure_output_dir():
+    """
+    make sure that script output dir exists
+    """
     try:
         os.lstat(scriptconfig["output_dir"])
     except OSError:
         os.mkdir(scriptconfig["output_dir"])
     
 def register_task(task, ident=None):
+    """
+    add a task to internal registry, will be offered as option during script execution
+    """
     task._ident = task.__class__.__name__ if ident is None else ident
     tasklist[task._ident] = task
     opt = task.get_options()
@@ -106,9 +137,12 @@ def register_task(task, ident=None):
     return task
 
 def run(options=None, tasks=None):
+    """
+    run a list of task either from options (as produced by OptionParser) or directly from tasks
+    """
     try:
         tasks = [tasklist[options.task]]
-    except:
+    except (KeyError, AttributeError):
         if tasks is None:
             tasks = tasklist.keys()
     for i in tasks:
@@ -123,10 +157,14 @@ def run(options=None, tasks=None):
 def set_options(opt):
     """
     update global script options from dict 'opt'
+    see script.scriptconfig["options"] for dict structure
     """
     scriptconfig["options"].update(opt)
 
 def process_script_options(optparser):
+    """
+    add script options to OptionParser optparser
+    """
     opt = scriptconfig["options"]
     for o in opt:
         if "longname" in opt[o]:
@@ -138,6 +176,9 @@ def process_script_options(optparser):
     return optparser
 
 def main():
+    """
+    execute task according to program options
+    """
     ustring = "%prog [options]\n\nAvailable tasks:"
     keys = tasklist.keys()
     keys.sort()
@@ -150,6 +191,7 @@ def main():
     for i in tasklist.values():
         i.options = options
         i.args = args
+    memoize.set_config(readcache=options.memoize)
     run(options=options)
     if options.show:
         plotting.show()
