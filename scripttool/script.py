@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-10 12:53:25 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-12 22:24:11 by Steffen Waldherr>
 
 import sys
 import os
@@ -70,6 +70,8 @@ class Task(object):
         fig, ax = plotting.make_ax(**kwargs)
         if name is None:
             name = "__" + str(len(self.figures)) + "__"
+        else:
+            name = name % self.__dict__
         self.figures[name] = fig
         return fig, ax
 
