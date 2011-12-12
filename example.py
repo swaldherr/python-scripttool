@@ -26,7 +26,7 @@ class Exp2(scripttool.Task):
 class Exp3(scripttool.Task):
     customize = {"freq":1.0}
     options = {}
-    doc = "plot sinus with frequency = %(freq)g"
+    __doc__ = "plot sinus with frequency = %(freq)g"
     def run(self):
         self.printf("Experiment 3 with frequency %(freq)g")
         fig, ax = self.make_ax(name="sin" + str(self.freq))

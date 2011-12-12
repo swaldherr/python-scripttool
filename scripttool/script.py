@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-12 22:24:11 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-12 22:36:51 by Steffen Waldherr>
 
 import sys
 import os
@@ -46,8 +46,8 @@ class Task(object):
         get task's documentation string, formatted using the task's attributes
         """
         try:
-            return self.doc % self.__dict__
-        except AttributeError:
+            return self.__doc__ % self.__dict__
+        except TypeError:
             return "__no_docstring__"
 
     def get_options(self):
