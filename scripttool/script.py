@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-12 22:36:51 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-13 13:10:01 by Steffen Waldherr>
 
 import sys
 import os
@@ -16,7 +16,9 @@ scriptconfig = {"output_dir": "script_output",
                                  "default":False},
                             "s":{"longname":"show", "help":"show plots", "action":"store_true", "default":False},
                             "x":{"longname":"export", "help":"export plots to files", "action":"store_true",
-                                 "default":False}
+                                 "default":False},
+                            "l":{"longname":"log", "help":"print to log file instead of stdout",
+                                 "action":"store_true", "default":False}
                             }
                 }
 
@@ -152,9 +154,14 @@ def run(options=None, tasks=None):
             i = i._ident
         elif isinstance(i, type):
             i = i.__name__
-        tasklist[i].run()
+        task = tasklist[i]
+        if options is not None and options.log:
+            task.out = open(os.path.join(task.get_output_dir(), "%s.log" % i), "w")
+        task.run()
+        if options is not None and options.log:
+            task.out.close()
         if options is not None and options.export:
-            tasklist[i].save_figures()
+            task.save_figures()
 
 def set_options(opt):
     """
