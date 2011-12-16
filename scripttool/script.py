@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-13 13:10:01 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-16 11:16:02 by Steffen Waldherr>
 
 import sys
 import os
@@ -66,9 +66,13 @@ class Task(object):
         add a figure for this task
 
         see plotting.make_ax for kwargs options
+        kwargs are formatted with this task's customize attributes
 
         returns figure handle, axes handle
         """
+        for i in kwargs:
+            if type(kwargs[i]) is str:
+                kwargs[i] = kwargs[i] % self.__dict__
         fig, ax = plotting.make_ax(**kwargs)
         if name is None:
             name = "__" + str(len(self.figures)) + "__"
