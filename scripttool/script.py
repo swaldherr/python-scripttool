@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-16 11:16:02 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-16 11:39:30 by Steffen Waldherr>
 
 import sys
 import os
@@ -198,13 +198,20 @@ def main():
     for i in keys:
         ustring += "\n\n" + i + ": " + tasklist[i].get_doc()
     optparser = OptionParser(ustring)
-    optparser.add_option("-t", "--task", help="Run task T (see above for info)", metavar="T", choices=tasklist.keys())
+    optparser.add_option("-t", "--task", help="Run task T (see above for info)", metavar="T")
+    optparser.add_option("--all", help="Run all tasks (see above)", action="store_true", default=False)
     optparser = process_script_options(optparser)
     options, args = optparser.parse_args()
+    if options.all:
+        tasks = tasklist
+    elif options.task is None:
+        optparser.error("Either --all or --task option must be used.")
+    else:
+        tasks = [os.path.basename(options.task).split(".")[0]]
     for i in tasklist.values():
         i.options = options
         i.args = args
     memoize.set_config(readcache=options.memoize)
-    run(options=options)
+    run(options=options,tasks=tasks)
     if options.show:
         plotting.show()
