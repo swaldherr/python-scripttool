@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-16 11:39:30 by Steffen Waldherr>
+# Time-stamp: <Last change 2011-12-19 09:29:50 by Steffen Waldherr>
 
 import sys
 import os
@@ -18,6 +18,8 @@ scriptconfig = {"output_dir": "script_output",
                             "x":{"longname":"export", "help":"export plots to files", "action":"store_true",
                                  "default":False},
                             "l":{"longname":"log", "help":"print to log file instead of stdout",
+                                 "action":"store_true", "default":False},
+                            "p":{"longname":"print-tasks", "help":"show a list of all task names",
                                  "action":"store_true", "default":False}
                             }
                 }
@@ -144,6 +146,13 @@ def register_task(task, ident=None):
         os.mkdir(task.get_output_dir())
     return task
 
+def print_tasks(out=sys.stdout):
+    """
+    print list of registered tasks to out
+    """
+    for t in tasklist:
+        out.write(t+"\n")
+
 def run(options=None, tasks=None):
     """
     run a list of task either from options (as produced by OptionParser) or directly from tasks
@@ -202,7 +211,10 @@ def main():
     optparser.add_option("--all", help="Run all tasks (see above)", action="store_true", default=False)
     optparser = process_script_options(optparser)
     options, args = optparser.parse_args()
-    if options.all:
+    if options.print_tasks:
+        print_tasks()
+        tasks = []
+    elif options.all:
         tasks = tasklist
     elif options.task is None:
         optparser.error("Either --all or --task option must be used.")
