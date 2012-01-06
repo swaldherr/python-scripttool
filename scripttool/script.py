@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2012-01-06 10:57:06 by Steffen Waldherr>
+# Time-stamp: <Last change 2012-01-06 11:31:33 by Steffen Waldherr>
 
 import sys
 import os
@@ -120,7 +120,10 @@ class Task(object):
         """
         print a standard log header message to this task's output stream
         """
-        self.printf("Task: %s" % self._ident)
+        try:
+            self.printf("Task: %s" % self._ident)
+        except AttributeError:
+            self.printf("Task: %s" % self.__class__.__name__)
         self.printf("Program call: %s" % " ".join(sys.argv))
         self.printf("Start time: %s." % time.strftime("%Y-%m-%d %H:%M:%S" + ("%+.2d:00" % (-time.timezone/3600))))
         self.printf("Options:")
