@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2012-01-06 10:23:49 by Steffen Waldherr>
+# Time-stamp: <Last change 2012-01-06 10:57:06 by Steffen Waldherr>
 
 import sys
 import os
@@ -104,16 +104,17 @@ class Task(object):
         except AttributeError:
             return os.path.join(scriptconfig["output_dir"], self.__class__.__name__)
 
-    def printf(self, string):
+    def printf(self, string, indent=0):
         """
         print string to script's output stream, format using dict of task attributes
+        adding 'indent' levels of indentation
 
         Example:
         >>> task.variable = 5
         >>> task.printf("Variable is: %(variable)d")
         Variable is: 5
         """
-        self.out.write((string+"\n") % self.__dict__)
+        self.out.write((" "*indent + string + "\n") % self.__dict__)
 
     def log_start(self):
         """
