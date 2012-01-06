@@ -2,11 +2,12 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-19 09:29:50 by Steffen Waldherr>
+# Time-stamp: <Last change 2012-01-06 10:23:49 by Steffen Waldherr>
 
 import sys
 import os
 from optparse import OptionParser
+import time
 
 import plotting
 import memoize
@@ -30,14 +31,14 @@ class Task(object):
     """
     base class for tasks that can be called in a script
     """
-    def __init__(self, out=sys.stdout, input=sys.stdin, **kwargs):
+    def __init__(self, out=sys.stdout, taskin=sys.stdin, **kwargs):
         """
         construct a task with output to out, input from input, and
         optional attributes given as keyword arguments
         (keywords must first be defined in class attribute 'customize')
         """
         self.out = out
-        self.input = input
+        self.input = taskin
         self.figures = {}
         try:
             for p in self.customize:
@@ -113,6 +114,28 @@ class Task(object):
         Variable is: 5
         """
         self.out.write((string+"\n") % self.__dict__)
+
+    def log_start(self):
+        """
+        print a standard log header message to this task's output stream
+        """
+        self.printf("Task: %s" % self._ident)
+        self.printf("Program call: %s" % " ".join(sys.argv))
+        self.printf("Start time: %s." % time.strftime("%Y-%m-%d %H:%M:%S" + ("%+.2d:00" % (-time.timezone/3600))))
+        self.printf("Options:")
+        try:
+            for p in self.customize:
+                self.printf("    %s = %s" % (p, self.__dict__[p]))
+        except AttributeError:
+            self.printf("    None found.")
+        self.printf("-----------------------------------------------")
+
+    def log_end(self):
+        """
+        print a standard log footer message to this task's output stream
+        """
+        self.printf("-----------------------------------------------")
+        self.printf("Finished task at %s." % time.strftime("%Y-%m-%d %H:%M:%S" + ("%+.2d:00" % (-time.timezone/3600))))
                       
 
 def set_output_dir(dirname):
@@ -170,8 +193,10 @@ def run(options=None, tasks=None):
         task = tasklist[i]
         if options is not None and options.log:
             task.out = open(os.path.join(task.get_output_dir(), "%s.log" % i), "w")
+            task.log_start()
         task.run()
         if options is not None and options.log:
+            task.log_end()
             task.out.close()
         if options is not None and options.export:
             task.save_figures()
