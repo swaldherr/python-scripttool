@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2012-01-06 11:31:33 by Steffen Waldherr>
+# Time-stamp: <Last change 2012-02-24 15:01:47 by Steffen Waldherr>
 
 import sys
 import os
@@ -16,8 +16,8 @@ scriptconfig = {"output_dir": "script_output",
                 "options": {"m":{"longname":"memoize","help":"use memoization", "action":"store_true",
                                  "default":False},
                             "s":{"longname":"show", "help":"show plots", "action":"store_true", "default":False},
-                            "x":{"longname":"export", "help":"export plots to files", "action":"store_true",
-                                 "default":False},
+                            "x":{"longname":"export", "help":"File type for saving plots", "action":"store",
+                                 "default":"__none__"},
                             "l":{"longname":"log", "help":"print to log file instead of stdout",
                                  "action":"store_true", "default":False},
                             "p":{"longname":"print-tasks", "help":"show a list of all task names",
@@ -84,7 +84,7 @@ class Task(object):
         self.figures[name] = fig
         return fig, ax
 
-    def save_figures(self, names=None):
+    def save_figures(self, names=None, format="png"):
         """
         save all figures for this task to their respective files.
         normally not called manually, because if the option "export" is set to true,
@@ -93,7 +93,7 @@ class Task(object):
         if names is None:
             names = self.figures.keys()
         for i in names:
-            self.figures[i].savefig(os.path.join(self.get_output_dir(), i+".png"))
+            self.figures[i].savefig(os.path.join(self.get_output_dir(), i+"." + format))
 
     def get_output_dir(self):
         """
@@ -202,8 +202,8 @@ def run(options=None, tasks=None):
         if options is not None and options.log:
             task.log_end()
             task.out.close()
-        if options is not None and options.export:
-            task.save_figures()
+        if options is not None and options.export != "__none__":
+            task.save_figures(format=options.export)
 
 def set_options(opt):
     """
