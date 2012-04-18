@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2012-02-24 15:01:47 by Steffen Waldherr>
+# Time-stamp: <Last change 2012-04-18 16:21:32 by Steffen Waldherr>
 
 import sys
 import os
@@ -45,6 +45,16 @@ class Task(object):
                 self.__setattr__(p, kwargs.get(p, self.customize[p]))
         except AttributeError:
             pass
+
+    def run_subtask(self, task):
+        """
+        run task as subtask of this one
+        """
+        task.out = self.out
+        task.input = self.input
+        task.figures = self.figures # store figures in this task's dict
+        task._ident = self._ident
+        task.run()
 
     def get_doc(self):
         """
