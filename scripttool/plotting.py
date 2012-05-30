@@ -2,7 +2,7 @@
 provides convenience plotting tools for scripttools
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2011-12-09 15:12:29 by Steffen Waldherr>
+# Time-stamp: <Last change 2012-05-30 10:40:31 by Steffen Waldherr>
 
 import matplotlib
 import os
@@ -19,10 +19,11 @@ def make_ax(xlabel="",ylabel="",title="", figtype=None):
     options for figtype:
     None - default figure appearance
     'beamer' - configuration for inclusion in latex beamer presentations
+    'small' - configuration for small figures
     """
     fig = pyplot.figure()
     ax = fig.add_subplot(111)
-    if figtype=='beamer':
+    if figtype=='beamer' or figtype=='small':
         if len(title) is 0:
             ax.set_position([0.15,0.15,0.8,0.8])
         else:
@@ -34,6 +35,10 @@ def make_ax(xlabel="",ylabel="",title="", figtype=None):
         fig.set_figwidth(6.0)
         fig.set_figheight(4.0)
         fig.set_dpi(200)
+    if figtype == 'small':
+        fig.set_figwidth(3.0)
+        fig.set_figheight(2.0)
+        fig.set_dpi(300)
     return fig, ax
 
 def show():
