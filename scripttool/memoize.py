@@ -25,7 +25,6 @@ dbname = "/tmp/memoizedb"
 
 def filecache(func):
     funchash = hashlib.sha256(marshal.dumps(func.func_code)).hexdigest()
-    print "%s uses cache %s." % (func.__name__, funchash)
     def callf(*args, **kwargs):
         try:
             arghash = pickle.dumps((args,kwargs))
@@ -36,7 +35,6 @@ def filecache(func):
             cache = shelve.open(dbname + funchash)
             try:
                 if not memoizeconfig["readcache"] or arghash not in cache:
-                    print "Executing %s ..." % func.__name__
                     funcres = func(*args, **kwargs)
                     cache[arghash] = funcres
                 else:
