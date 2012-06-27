@@ -43,6 +43,7 @@ def filecache(func):
             finally:
                 cache.close()
         return funcres
+    callf.func_doc = func.func_doc
     return callf
         
 def set_config(**kwargs):
