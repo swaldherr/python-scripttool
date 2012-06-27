@@ -18,15 +18,17 @@ def squareroot(x):
 import shelve
 import cPickle as pickle
 import hashlib
+import marshal
 
 memoizeconfig = {"readcache": False}
 dbname = "/tmp/memoizedb"
 
 def filecache(func):
-    funchash = hashlib.sha256(pickle.dumps(func.__module__+"."+func.__name__)).hexdigest()
+    funchash = hashlib.sha256(marshal.dumps(func.func_code)).hexdigest()
+    print "%s uses cache %s." % (func.__name__, funchash)
     def callf(*args, **kwargs):
         try:
-            arghash = hashlib.sha256(pickle.dumps((args,kwargs))).hexdigest()
+            arghash = pickle.dumps((args,kwargs))
         except (TypeError, pickle.PickleError) , e:
             print "Warning: %s in memoizing %s, not using cache." % (type(e).__name__, func.__name)
             funcres = func(*args, **kwargs)
@@ -34,6 +36,7 @@ def filecache(func):
             cache = shelve.open(dbname + funchash)
             try:
                 if not memoizeconfig["readcache"] or arghash not in cache:
+                    print "Executing %s ..." % func.__name__
                     funcres = func(*args, **kwargs)
                     cache[arghash] = funcres
                 else:
