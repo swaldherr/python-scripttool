@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2012-04-18 16:21:32 by Steffen Waldherr>
+# Time-stamp: <Last change 2012-10-18 17:37:36 by Steffen Waldherr>
 
 import sys
 import os
@@ -175,12 +175,6 @@ def register_task(task, ident=None):
     tasklist[task._ident] = task
     opt = task.get_options()
     scriptconfig["options"].update(opt)
-    # make sure that taks-specific output_dir exists
-    ensure_output_dir() # for global output_dir
-    try:
-        os.lstat(task.get_output_dir())
-    except OSError:
-        os.mkdir(task.get_output_dir())
     return task
 
 def print_tasks(out=sys.stdout):
@@ -205,6 +199,12 @@ def run(options=None, tasks=None):
         elif isinstance(i, type):
             i = i.__name__
         task = tasklist[i]
+        # make sure that taks-specific output_dir exists
+        ensure_output_dir() # for global output_dir
+        try:
+            os.lstat(task.get_output_dir())
+        except OSError:
+            os.mkdir(task.get_output_dir())
         if options is not None and options.log:
             task.out = open(os.path.join(task.get_output_dir(), "%s.log" % i), "w")
             task.log_start()
