@@ -2,12 +2,13 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2012-10-18 17:37:36 by Steffen Waldherr>
+# Time-stamp: <Last change 2012-11-15 17:37:35 by Steffen Waldherr>
 
 import sys
 import os
 from optparse import OptionParser
 import time
+import shelve
 
 import plotting
 import memoize
@@ -113,6 +114,18 @@ class Task(object):
             return os.path.join(scriptconfig["output_dir"], self._ident)
         except AttributeError:
             return os.path.join(scriptconfig["output_dir"], self.__class__.__name__)
+
+    def store(self, *args):
+        """
+        Shelve args in '<ident>.db'.
+        """
+	try:
+	    name = self._ident
+        except AttributeError:
+	    name = self.__class__.__name__
+	db = shelve.open(os.path.join(self.get_output_dir(), name + ".db"))
+	db[name] = args
+	db.close()
 
     def printf(self, string, indent=0):
         """
