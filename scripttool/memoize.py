@@ -29,7 +29,7 @@ def filecache(func):
         try:
             arghash = pickle.dumps((args,kwargs))
         except (TypeError, pickle.PickleError) , e:
-            print "Warning: %s in memoizing %s, not using cache." % (type(e).__name__, func.__name)
+            print "Warning: %s in memoizing %s, not using cache." % (type(e).__name__, func.__name__)
             funcres = func(*args, **kwargs)
         else:
             cache = shelve.open(dbname + funchash)
