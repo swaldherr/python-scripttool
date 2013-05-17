@@ -2,13 +2,14 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2012-11-15 17:37:35 by Steffen Waldherr>
+# Time-stamp: <Last change 2013-05-17 22:20:03 by Steffen Waldherr>
 
 import sys
 import os
 from optparse import OptionParser
 import time
 import shelve
+import copy
 
 import plotting
 import memoize
@@ -43,7 +44,7 @@ class Task(object):
         self.figures = {}
         try:
             for p in self.customize:
-                self.__setattr__(p, kwargs.get(p, self.customize[p]))
+                self.__setattr__(p, kwargs[p] if p in kwargs else copy.copy(self.customize[p]))
         except AttributeError:
             pass
 
