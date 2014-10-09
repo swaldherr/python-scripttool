@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2013-05-17 22:20:03 by Steffen Waldherr>
+# Time-stamp: <Last change 2014-10-09 15:14:24 by Steffen Waldherr>
 
 import sys
 import os
@@ -272,7 +272,7 @@ def main():
     elif options.task is None:
         optparser.error("Either --all or --task option must be used.")
     else:
-        tasks = [os.path.basename(options.task).split(".")[0]]
+        tasks = [os.path.splitext(os.path.basename(options.task))[0]]
     for i in tasklist.values():
         i.options = options
         i.args = args
