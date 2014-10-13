@@ -2,7 +2,7 @@
 provides convenience plotting tools for scripttools
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2014-10-13 12:23:03 by Steffen Waldherr>
+# Time-stamp: <Last change 2014-10-13 12:42:43 by Steffen Waldherr>
 
 import matplotlib
 import os
@@ -26,29 +26,6 @@ def make_ax(xlabel="",ylabel="",title="", figtype=None, figargs={}, axargs={}):
     'axargs' are keyword arguments for add_subplot()
     """
     fig = pyplot.figure(**figargs)
-    ax = fig.add_subplot(111, **axargs)
-    fontsize = 12
-    if figtype=='beamer':
-        fontsize = 12
-        if len(title) is 0:
-            ax.set_position([0.15,0.15,0.8,0.8])
-        else:
-            ax.set_position([0.15,0.15,0.8,0.75])
-    if figtype=='small':
-        fontsize = 12
-        if len(title) is 0:
-            ax.set_position([0.2,0.2,0.75,0.75])
-        else:
-            ax.set_position([0.2,0.2,0.75,0.7])
-    if figtype=='one-column':
-        fontsize = 14
-        if len(title) is 0:
-            ax.set_position([0.15,0.15,0.8,0.8])
-        else:
-            ax.set_position([0.15,0.15,0.8,0.75])
-    ax.set_xlabel(xlabel, fontsize=fontsize)
-    ax.set_ylabel(ylabel, fontsize=fontsize)
-    ax.set_title(title, fontsize=fontsize)
     if figtype == 'beamer':
         fig.set_figwidth(6.0)
         fig.set_figheight(4.0)
@@ -62,9 +39,33 @@ def make_ax(xlabel="",ylabel="",title="", figtype=None, figargs={}, axargs={}):
         fig.set_figheight(3.6)
         fig.set_dpi(200)
     if figtype == 'small-square':
-        fig.set_figwidth(3.6)
-        fig.set_figheight(3.6)
+        (w, h) = matplotlib.figure.figaspect(1)
+        fig.set_figwidth(w/2 / 0.75)
+        fig.set_figheight(h/2 / (0.75 if len(title) else 0.8))
         fig.set_dpi(200)
+    ax = fig.add_subplot(111, **axargs)
+    fontsize = 12
+    if figtype=='beamer':
+        fontsize = 12
+        if len(title) is 0:
+            ax.set_position([0.15,0.15,0.8,0.8])
+        else:
+            ax.set_position([0.15,0.15,0.8,0.75])
+    if figtype=='small' or figtype=='small-square':
+        fontsize = 12
+        if len(title) is 0:
+            ax.set_position([0.2,0.15,0.75,0.8])
+        else:
+            ax.set_position([0.2,0.15,0.75,0.75])
+    if figtype=='one-column':
+        fontsize = 14
+        if len(title) is 0:
+            ax.set_position([0.15,0.15,0.8,0.8])
+        else:
+            ax.set_position([0.15,0.15,0.8,0.75])
+    ax.set_xlabel(xlabel, fontsize=fontsize)
+    ax.set_ylabel(ylabel, fontsize=fontsize)
+    ax.set_title(title, fontsize=fontsize)
     return fig, ax
 
 def show():
