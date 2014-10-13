@@ -2,7 +2,7 @@
 provides convenience plotting tools for scripttools
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2013-10-23 09:03:45 by Steffen Waldherr>
+# Time-stamp: <Last change 2014-10-13 12:23:03 by Steffen Waldherr>
 
 import matplotlib
 import os
@@ -59,6 +59,10 @@ def make_ax(xlabel="",ylabel="",title="", figtype=None, figargs={}, axargs={}):
         fig.set_dpi(300)
     if figtype == 'one-column':
         fig.set_figwidth(5.4)
+        fig.set_figheight(3.6)
+        fig.set_dpi(200)
+    if figtype == 'small-square':
+        fig.set_figwidth(3.6)
         fig.set_figheight(3.6)
         fig.set_dpi(200)
     return fig, ax
