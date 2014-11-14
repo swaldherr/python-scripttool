@@ -21,7 +21,7 @@ To get a full list of avaiable commands, read the output of:
 from distutils.core import setup;
 
 setup(name = 'scripttool',
-      version = '0.1',
+      version = '0.2',
       description='Convenience scripting functions',
       author='Steffen Waldherr',
       author_email='waldherr@ist.uni-stuttgart.de',
