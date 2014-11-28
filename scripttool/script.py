@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2014-10-09 15:14:24 by Steffen Waldherr>
+# Time-stamp: <Last change 2014-11-28 12:26:53 by Steffen Waldherr>
 
 import sys
 import os
@@ -10,6 +10,7 @@ from optparse import OptionParser
 import time
 import shelve
 import copy
+import warnings
 
 import plotting
 import memoize
@@ -43,10 +44,17 @@ class Task(object):
         self.input = taskin
         self.figures = {}
         try:
-            for p in self.customize:
-                self.__setattr__(p, kwargs[p] if p in kwargs else copy.copy(self.customize[p]))
+            c = self.customize
+            havecustomize = True
         except AttributeError:
-            pass
+            havecustomize = False
+        if havecustomize:
+            for p in self.customize:
+                try:
+                    self.__setattr__(p, kwargs[p] if p in kwargs else copy.copy(c[p]))
+                except AttributeError:
+                    warnings.warn("Cannot copy attribute '%s' in task %s." % (p,type(self)))
+                    self.__setattr__(p, kwargs[p] if p in kwargs else c[p])
 
     def run_subtask(self, task):
         """
