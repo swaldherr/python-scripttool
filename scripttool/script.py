@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2014-11-28 12:26:53 by Steffen Waldherr>
+# Time-stamp: <Last change 2015-01-09 17:47:56 by Steffen Waldherr>
 
 import sys
 import os
@@ -11,6 +11,7 @@ import time
 import shelve
 import copy
 import warnings
+import csv
 
 import plotting
 import memoize
@@ -123,6 +124,23 @@ class Task(object):
             return os.path.join(scriptconfig["output_dir"], self._ident)
         except AttributeError:
             return os.path.join(scriptconfig["output_dir"], self.__class__.__name__)
+
+    def csv_export(self, filename, data, headers=None, delimiter="\t"):
+        """
+        Export 'data' as csv file to 'filename', using strings in list 'headers' as column titles.
+
+        The output directory is automatically prepended to the filename.
+
+        To save data from individual vectors a1, a2, ... per column, use
+            data = np.vstack((a1, a2, ...)).T
+        """
+        resfile = open(os.path.join(self.get_output_dir(), filename), "w")
+        reswriter = csv.writer(resfile, delimiter=delimiter)
+        if headers is not None:
+            reswriter.writerow(headers)
+        for i in range(data.shape[0]):
+            reswriter.writerow(data[i])
+        resfile.close()
 
     def store(self, *args):
         """
