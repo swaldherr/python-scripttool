@@ -2,7 +2,7 @@
 provides convenience plotting tools for scripttools
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2014-10-13 12:42:43 by Steffen Waldherr>
+# Time-stamp: <Last change 2015-03-29 16:09:59 by Steffen Waldherr>
 
 import matplotlib
 import os
@@ -10,7 +10,7 @@ if not "DISPLAY" in os.environ:
     matplotlib.use("Agg")
 from matplotlib import pyplot
 
-def make_ax(xlabel="",ylabel="",title="", figtype=None, figargs={}, axargs={}):
+def make_ax(xlabel="",ylabel="",title="", figtype=None, figargs={}, axargs={}, **kwargs):
     """
     make a simple figure with one axis for plotting
 
@@ -24,6 +24,7 @@ def make_ax(xlabel="",ylabel="",title="", figtype=None, figargs={}, axargs={}):
 
     'figargs' are keyword arguments for figure()
     'axargs' are keyword arguments for add_subplot()
+    'kwargs' are keyword arguments for set_{xlabel, ylabel, title}, e.g. font info
     """
     fig = pyplot.figure(**figargs)
     if figtype == 'beamer':
@@ -63,9 +64,14 @@ def make_ax(xlabel="",ylabel="",title="", figtype=None, figargs={}, axargs={}):
             ax.set_position([0.15,0.15,0.8,0.8])
         else:
             ax.set_position([0.15,0.15,0.8,0.75])
-    ax.set_xlabel(xlabel, fontsize=fontsize)
-    ax.set_ylabel(ylabel, fontsize=fontsize)
-    ax.set_title(title, fontsize=fontsize)
+    if "fontsize" in kwargs:
+        ax.set_xlabel(xlabel, **kwargs)
+        ax.set_ylabel(ylabel, **kwargs)
+        ax.set_title(title, **kwargs)
+    else:
+        ax.set_xlabel(xlabel, fontsize=fontsize, **kwargs)
+        ax.set_ylabel(ylabel, fontsize=fontsize, **kwargs)
+        ax.set_title(title, fontsize=fontsize, **kwargs)
     return fig, ax
 
 def show():
