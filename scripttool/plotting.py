@@ -2,7 +2,7 @@
 provides convenience plotting tools for scripttools
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2015-03-29 16:09:59 by Steffen Waldherr>
+# Time-stamp: <Last change 2015-04-08 09:39:16 by Steffen Waldherr>
 
 import matplotlib
 import os
@@ -63,6 +63,9 @@ def make_ax(xlabel="",ylabel="",title="", figtype=None, figargs={}, axargs={}, *
         if len(title) is 0:
             ax.set_position([0.15,0.15,0.8,0.8])
         else:
+            ax.set_position([0.15,0.15,0.8,0.75])
+    if figtype is None:
+        if len(title) > 0:
             ax.set_position([0.15,0.15,0.8,0.75])
     if "fontsize" in kwargs:
         ax.set_xlabel(xlabel, **kwargs)
