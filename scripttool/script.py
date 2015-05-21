@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2015-05-21 10:51:47 by Steffen Waldherr>
+# Time-stamp: <Last change 2015-05-21 11:06:32 by Steffen Waldherr>
 
 import sys
 import os
@@ -39,7 +39,8 @@ class Task(object):
         """
         construct a task with output to out, input from input
         
-        callback is a method to be called before running the tasks, and may be used to setup
+        callback is a method to be called before running the tasks, and may be used to modify the task's options.
+        It takes the Task object as an argument.
         
         custom attributes are given as keyword arguments
         (keywords must first be defined in class attribute 'customize')
@@ -47,7 +48,18 @@ class Task(object):
         self.out = out
         self.input = taskin
         self.figures = {}
-        self.init_kwargs = kwargs
+        try:
+            c = self.customize
+            havecustomize = True
+        except AttributeError:
+            havecustomize = False
+        if havecustomize:
+            for p in self.customize:
+                try:
+                    self.__setattr__(p, kwargs[p] if p in kwargs else copy.copy(c[p]))
+                except AttributeError:
+                    warnings.warn("Cannot copy attribute '%s' in task %s, using reference assignment instead." % (p,type(self)))
+                    self.__setattr__(p, kwargs[p] if p in kwargs else c[p])
         self.setup_callback = callback
 
     def run(self):
@@ -61,22 +73,7 @@ class Task(object):
         Is called by scripttool before actually running the task, to setup customization options etc.
         """
         if callable(self.setup_callback):
-            callback_kwargs = self.setup_callback()
-        try:
-            c = self.customize
-            self.havecustomize = True
-        except AttributeError:
-            self.havecustomize = False
-        if havecustomize:
-            for p in self.customize:
-                if p in callback_kwargs:
-                    self.__setattr__(p, callback_kwargs[p])
-                else:
-                    try:
-                        self.__setattr__(p, self.init_kwargs[p] if p in self.init_kwargs else copy.copy(c[p]))
-                    except AttributeError:
-                        warnings.warn("Cannot copy attribute '%s' in task %s, using reference assignment instead." % (p,type(self)))
-                        self.__setattr__(p, self.init_kwargs[p] if p in self.init_kwargs else c[p])
+            self.setup_callback(self)
 
     def run_subtask(self, task):
         """
@@ -94,7 +91,7 @@ class Task(object):
         get task's documentation string, formatted using the task's attributes
         """
         try:
-            return self.__doc__ % self.init_kwargs
+            return self.__doc__ % self.__dict__
         except TypeError:
             return "__no_docstring__"
 
