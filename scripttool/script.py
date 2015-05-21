@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2015-05-21 11:06:32 by Steffen Waldherr>
+# Time-stamp: <Last change 2015-05-21 16:20:25 by Steffen Waldherr>
 
 import sys
 import os
@@ -183,7 +183,7 @@ class Task(object):
         >>> task.printf("Variable is: %(variable)d")
         Variable is: 5
         """
-        self.out.write((" "*indent + string + "\n") % self.__dict__)
+        self.out.write((" "*indent + string + "\n").format(self.__dict__))
 
     def log_start(self):
         """
