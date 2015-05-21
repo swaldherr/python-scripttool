@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2015-01-09 17:47:56 by Steffen Waldherr>
+# Time-stamp: <Last change 2015-05-21 10:51:47 by Steffen Waldherr>
 
 import sys
 import os
@@ -35,27 +35,48 @@ class Task(object):
     """
     base class for tasks that can be called in a script
     """
-    def __init__(self, out=sys.stdout, taskin=sys.stdin, **kwargs):
+    def __init__(self, out=sys.stdout, taskin=sys.stdin, callback=None, **kwargs):
         """
-        construct a task with output to out, input from input, and
-        optional attributes given as keyword arguments
+        construct a task with output to out, input from input
+        
+        callback is a method to be called before running the tasks, and may be used to setup
+        
+        custom attributes are given as keyword arguments
         (keywords must first be defined in class attribute 'customize')
         """
         self.out = out
         self.input = taskin
         self.figures = {}
+        self.init_kwargs = kwargs
+        self.setup_callback = callback
+
+    def run(self):
+        """
+        Abstract method to run this task.
+        """
+        pass
+
+    def setup(self):
+        """
+        Is called by scripttool before actually running the task, to setup customization options etc.
+        """
+        if callable(self.setup_callback):
+            callback_kwargs = self.setup_callback()
         try:
             c = self.customize
-            havecustomize = True
+            self.havecustomize = True
         except AttributeError:
-            havecustomize = False
+            self.havecustomize = False
         if havecustomize:
             for p in self.customize:
-                try:
-                    self.__setattr__(p, kwargs[p] if p in kwargs else copy.copy(c[p]))
-                except AttributeError:
-                    warnings.warn("Cannot copy attribute '%s' in task %s." % (p,type(self)))
-                    self.__setattr__(p, kwargs[p] if p in kwargs else c[p])
+                if p in callback_kwargs:
+                    self.__setattr__(p, callback_kwargs[p])
+                else:
+                    try:
+                        self.__setattr__(p, self.init_kwargs[p] if p in self.init_kwargs else copy.copy(c[p]))
+                    except AttributeError:
+                        warnings.warn("Cannot copy attribute '%s' in task %s, using reference assignment instead." % (p,type(self)))
+                        self.__setattr__(p, self.init_kwargs[p] if p in self.init_kwargs else c[p])
 
     def run_subtask(self, task):
         """
@@ -65,6 +86,7 @@ class Task(object):
         task.input = self.input
         task.figures = self.figures # store figures in this task's dict
         task._ident = self._ident
+        task.setup()
         task.run()
 
     def get_doc(self):
@@ -72,7 +94,7 @@ class Task(object):
         get task's documentation string, formatted using the task's attributes
         """
         try:
-            return self.__doc__ % self.__dict__
+            return self.__doc__ % self.init_kwargs
         except TypeError:
             return "__no_docstring__"
 
@@ -176,7 +198,10 @@ class Task(object):
             self.printf("Task: %s" % self.__class__.__name__)
         self.printf("Program call: %s" % " ".join(sys.argv))
         self.printf("Start time: %s." % time.strftime("%Y-%m-%d %H:%M:%S" + ("%+.2d:00" % (-time.timezone/3600))))
-        self.printf("Options:")
+        if callable(self.setup_callback):
+            self.printf("Options (from setup callback):")
+        else:
+            self.printf("Options:")
         try:
             for p in self.customize:
                 self.printf("    %s = %s" % (p, self.__dict__[p]))
@@ -239,6 +264,7 @@ def run(options=None, tasks=None):
         elif isinstance(i, type):
             i = i.__name__
         task = tasklist[i]
+        task.setup()
         # make sure that taks-specific output_dir exists
         ensure_output_dir() # for global output_dir
         try:
