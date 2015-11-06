@@ -2,7 +2,7 @@
 provides scripttool classes
 """
 # Copyright (C) 2011 Steffen Waldherr waldherr@ist.uni-stuttgart.de
-# Time-stamp: <Last change 2015-05-21 16:20:25 by Steffen Waldherr>
+# Time-stamp: <Last change 2015-11-06 12:18:51 by Steffen Waldherr>
 
 import sys
 import os
@@ -173,17 +173,22 @@ class Task(object):
 	db[name] = args
 	db.close()
 
-    def printf(self, string, indent=0):
+    def printf(self, string, indent=0, format=True):
         """
         print string to script's output stream, format using dict of task attributes
         adding 'indent' levels of indentation
+
+        Use format=False to prevent formatting of the string with it's customization options.
 
         Example:
         >>> task.variable = 5
         >>> task.printf("Variable is: %(variable)d")
         Variable is: 5
         """
-        self.out.write((" "*indent + string + "\n").format(self.__dict__))
+        if format:
+            self.out.write((" "*indent + string + "\n").format(self.__dict__))
+        else:
+            self.out.write(" "*indent + string + "\n")
 
     def log_start(self):
         """
@@ -201,7 +206,7 @@ class Task(object):
             self.printf("Options:")
         try:
             for p in self.customize:
-                self.printf("    %s = %s" % (p, self.__dict__[p]))
+                self.printf("    %s = %s" % (p, self.__dict__[p]), format=False)
         except AttributeError:
             self.printf("    None found.")
         self.printf("-----------------------------------------------")
